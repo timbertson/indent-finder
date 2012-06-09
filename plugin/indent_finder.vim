@@ -17,7 +17,8 @@ endfun
 fun! s:IndentFinderLoad()
     let b:indent_finder_result = ""
     let b:indent_finder_error = ""
-    if len(expand("%")) == 0 || &buftype != ""
+    let l:filename=expand("%:p")
+    if &buftype != "" || !filereadable(l:filename)
         " not a file buffer
         return
     endif
@@ -26,7 +27,7 @@ fun! s:IndentFinderLoad()
                 \. " --vim-output "
                 \. " --default-style=".g:indent_finder_default_style
                 \. " --default-width=".g:indent_finder_default_width
-                \. " ". shellescape(expand("%"))
+                \. " ". shellescape(l:filename)
     let l:result =  system(l:cmd)
 
     " uncomment the following line to see what indent_finder returned
