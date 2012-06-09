@@ -40,7 +40,7 @@ DEFAULT_TAB_WIDTH = 4
 # DEFAULT_RESULT = ('space', 8 )
 # DEFAULT_RESULT = ('tab', DEFAULT_TAB_WIDTH )
 
-DEFAULT_RESULT = ('space', 4 )
+DEFAULT_RESULT = ('space', DEFAULT_TAB_WIDTH )
 
 VERBOSE_QUIET   = 0
 VERBOSE_INFO    = 1
@@ -115,9 +115,10 @@ class IndentFinder:
     mail, if possible with the offending file.
     """
 
-    def __init__(self, default_result=DEFAULT_RESULT):
+    def __init__(self, default_result=DEFAULT_RESULT, default_tab_width=DEFAULT_TAB_WIDTH):
         self.clear()
         self.default_result = default_result
+        self.default_tab_width = default_tab_width
 
     VERBOSITY = DEFAULT_VERBOSITY
 
@@ -373,7 +374,7 @@ class IndentFinder:
 
         # Detect tab files
         elif max_line_tab > max_line_mixed and max_line_tab > max_line_space:
-            result = ('tab', DEFAULT_TAB_WIDTH )
+            result = ('tab', self.default_tab_width )
 
         # Detect mixed files
         elif max_line_mixed >= max_line_tab and max_line_mixed > max_line_space:
@@ -409,7 +410,7 @@ class IndentFinder:
         result = self.results()
         indent_type, n = result
         if indent_type == "space":
-            # spaces: 
+            # spaces:
             #   => set sts to the number of spaces
             #   => set tabstop to the number of spaces
             #   => expand tabs to spaces
@@ -422,7 +423,7 @@ class IndentFinder:
             #   => set tabstop to preferred value
             #   => set expandtab to false
             #   => set shiftwidth to tabstop
-            return "set sts=0 | set tabstop=%d | set noexpandtab | set shiftwidth=%d \" (%s)" % (DEFAULT_TAB_WIDTH, DEFAULT_TAB_WIDTH, indent_type )
+            return "set sts=0 | set tabstop=%d | set noexpandtab | set shiftwidth=%d \" (%s)" % (self.default_tab_width, self.default_tab_width, indent_type )
 
         if indent_type == 'mixed':
             tab_indent, space_indent = n
@@ -436,29 +437,39 @@ class IndentFinder:
 
 
 def main():
-    VIM_OUTPUT = 0
-
     from optparse import OptionParser
     p = OptionParser(help)
-    p.add_option('--vim-output', action='store_true', default=False)
-    p.add_option('--verbose', action='count', default=DEFAULT_VERBOSITY, dest='verbosity')
-    p.add_option('--version', action='store_true')
+    p.add_option('--vim-output', action='store_true', default=False,
+        help="print a vim command to adopt the file's indent settings")
+    p.add_option('--verbose', action='count', default=DEFAULT_VERBOSITY, dest='verbosity',
+        help="increase verbosity (may be provided multiple times)")
+    p.add_option('--version', action='store_true',
+        help="print version and exit")
+    p.add_option('--default-style', default='space', action='store', choices=['space','tab'],
+        help='"space" or "tab", (defaults to %default)')
+    p.add_option('--default-width', type='int', default=DEFAULT_TAB_WIDTH,
+        help="default indent width (defaults to %default)")
+    p.add_option('--default-tab-width', type='int', default=DEFAULT_TAB_WIDTH,
+        help="default tab width (defaults to --default-width)")
     opts, args = p.parse_args()
     if opts.version:
         print 'IndentFinder v%s' % VERSION
         return
     IndentFinder.VERBOSITY = opts.verbosity
-    VIM_OUTPUT = opts.vim_output
+    default_result = (opts.default_style, opts.default_width)
+    default_tab_width = opts.default_tab_width or opts.default_width
     file_list = args or ['-']
 
-    fi = IndentFinder()
+    fi = IndentFinder(
+            default_result=default_result,
+            default_tab_width=default_tab_width)
 
     one_file = (len(file_list) == 1)
 
     for fname in file_list:
         fi.parse_file( fname )
 
-        output = fi.vim_output() if VIM_OUTPUT else str(fi)
+        output = fi.vim_output() if opts.vim_output else str(fi)
         if one_file:
             sys.stdout.write( output )
         else:
