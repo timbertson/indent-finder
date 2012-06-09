@@ -1,4 +1,4 @@
-# 
+#
 # Indentation finder, by Philippe Fremy <phil at freehackers dot org>
 # Copyright 2002-2008 Philippe Fremy
 #
@@ -10,11 +10,11 @@ import sys
 import re
 
 help = \
-"""Usage : %s [ --vim-output ] [ --verbose ] file1 file2 ... fileN
+"""%prog [ --vim-output ] [ --verbose ] file1 file2 ... fileN
 
 Display indentation used in the list of files. Possible answers are (with X
 being the number of spaces used for indentation):
-space X   
+space X
 tab 8
 mixed tab X space Y
 
@@ -435,19 +435,20 @@ def main():
     VIM_OUTPUT = 0
 
     file_list = []
-    for opt in sys.argv[1:]:
-        if opt == "--vim-output": 
-            VIM_OUTPUT = 1
-        elif opt == "--verbose" or opt == '-v': 
-            IndentFinder.VERBOSITY += 1
-        elif opt == "--version": 
-            print 'IndentFinder v%s' % VERSION
-            return
-        elif opt[0] == "-": 
-            print help % sys.argv[0]
-            return
-        else:
-            file_list.append( opt )
+    from optparse import OptionParser
+    p = OptionParser(help)
+    p.add_option('--vim-output', action='store_true', default=False)
+    p.add_option('--verbose', action='count', default=DEFAULT_VERBOSITY, dest='verbosity')
+    p.add_option('--version', action='store_true')
+    opts, file_list = p.parse_args()
+    if opts.version:
+        print 'IndentFinder v%s' % VERSION
+        return
+    IndentFinder.VERBOSITY = opts.verbosity
+    VIM_OUTPUT = opts.vim_output
+    if not file_list:
+        p.print_help()
+        return 1
 
     fi = IndentFinder()
 
@@ -470,4 +471,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
