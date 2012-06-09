@@ -1,5 +1,9 @@
-let g:indent_finder_default_style="space"
-let g:indent_finder_default_width=4
+if !exists('g:indent_finder_default_style')
+  let g:indent_finder_default_style = "space"
+endif
+if !exists('g:indent_finder_default_width')
+  let g:indent_finder_default_width=4
+endif
 
 " global aliases to internal functions, so users can manually trigger a load
 fun! g:IndentFinderLoad()
