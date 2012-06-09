@@ -18,9 +18,10 @@ TEST_DEFAULT_RESULT=('',0)
 
 class Test_many_files( unittest.TestCase ):
 
+    default_tab_width = 13
+
     def check_file( self, fname, result, expected_vim_result ):
-        ifi = indent_finder.IndentFinder( TEST_DEFAULT_RESULT )
-        indent_finder.DEFAULT_TAB_WIDTH = 13
+        ifi = indent_finder.IndentFinder( TEST_DEFAULT_RESULT, self.default_tab_width )
         ifi.parse_file( fname )
         res = str(ifi)
         self.assertEquals( res, result )
@@ -34,7 +35,7 @@ class Test_many_files( unittest.TestCase ):
         for f in l:
             print 'checking: ', f
             self.check_file( f , 'space 4', 
-              'set sts=4 | set tabstop=4 | set expandtab | set shiftwidth=4 " (space 4)' )
+              'setlocal sts=4 tabstop=4 expandtab shiftwidth=4 " (space 4)' )
 
     def test_file_space2( self ):
         l = []
@@ -42,7 +43,7 @@ class Test_many_files( unittest.TestCase ):
         for f in l:
             print 'checking: ', f
             self.check_file( f , 'space 2', 
-              'set sts=2 | set tabstop=2 | set expandtab | set shiftwidth=2 " (space 2)' )
+              'setlocal sts=2 tabstop=2 expandtab shiftwidth=2 " (space 2)' )
 
     def test_file_tab( self ):
         l = []
@@ -51,10 +52,10 @@ class Test_many_files( unittest.TestCase ):
         l += glob.glob( 'test_files/tab/*.py' )
         for f in l:
             print 'checking: ', f
-            self.check_file( f , 'tab %d' % indent_finder.DEFAULT_TAB_WIDTH,
-            'set sts=0 | set tabstop=%d | set noexpandtab | set shiftwidth=%d " (tab)'%
-              (indent_finder.DEFAULT_TAB_WIDTH, 
-                indent_finder.DEFAULT_TAB_WIDTH) )
+            self.check_file( f , 'tab %d' % self.default_tab_width,
+            'setlocal sts=0 tabstop=%d noexpandtab shiftwidth=%d " (tab)'%
+              (self.default_tab_width, 
+                self.default_tab_width) )
 
     def test_file_mixed4( self ):
         l = []
@@ -62,7 +63,7 @@ class Test_many_files( unittest.TestCase ):
         for f in l:
             print 'checking: ', f
             self.check_file( f, 'mixed tab 8 space 4',
-              'set sts=4 | set tabstop=8 | set noexpandtab | set shiftwidth=4 " (mixed 4)' )
+              'setlocal sts=4 tabstop=8 noexpandtab shiftwidth=4 " (mixed 4)' )
         
 
 if __name__ == "__main__":

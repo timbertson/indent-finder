@@ -415,7 +415,7 @@ class IndentFinder:
             #   => set tabstop to the number of spaces
             #   => expand tabs to spaces
             #   => set shiftwidth to the number of spaces
-            return "set sts=%d | set tabstop=%d | set expandtab | set shiftwidth=%d \" (%s %d)" % (n,n,n,indent_type,n)
+            return "setlocal sts=%d tabstop=%d expandtab shiftwidth=%d \" (%s %d)" % (n,n,n,indent_type,n)
 
         elif indent_type == "tab":
             # tab:
@@ -423,7 +423,7 @@ class IndentFinder:
             #   => set tabstop to preferred value
             #   => set expandtab to false
             #   => set shiftwidth to tabstop
-            return "set sts=0 | set tabstop=%d | set noexpandtab | set shiftwidth=%d \" (%s)" % (self.default_tab_width, self.default_tab_width, indent_type )
+            return "setlocal sts=0 tabstop=%d noexpandtab shiftwidth=%d \" (%s)" % (self.default_tab_width, self.default_tab_width, indent_type )
 
         if indent_type == 'mixed':
             tab_indent, space_indent = n
@@ -432,7 +432,7 @@ class IndentFinder:
             #   => set tabstop to tab_indent
             #   => set expandtab to false
             #   => set shiftwidth to space_indent
-            return "set sts=4 | set tabstop=%d | set noexpandtab | set shiftwidth=%d \" (%s %d)" % (tab_indent, space_indent, indent_type, space_indent )
+            return "setlocal sts=4 tabstop=%d noexpandtab shiftwidth=%d \" (%s %d)" % (tab_indent, space_indent, indent_type, space_indent )
 
 
 
