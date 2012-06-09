@@ -449,7 +449,7 @@ def main():
         help='"space" or "tab", (defaults to %default)')
     p.add_option('--default-width', type='int', default=DEFAULT_TAB_WIDTH,
         help="default indent width (defaults to %default)")
-    p.add_option('--default-tab-width', type='int', default=DEFAULT_TAB_WIDTH,
+    p.add_option('--default-tab-width', type='int', default=None,
         help="default tab width (defaults to --default-width)")
     opts, args = p.parse_args()
     if opts.version:
