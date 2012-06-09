@@ -273,6 +273,17 @@ class Test_find_indent( unittest.TestCase ):
 
         self.assertEquals( ifi.nb_indent_hint, 4 )
 
+    def test_analyse_stdin( self ):
+        import subprocess
+        proc = subprocess.Popen(
+                ['python', os.path.join(os.path.dirname(__file__), 'indent_finder.py')],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE)
+        output, _ = proc.communicate('test\n   three spaces!\n')
+        self.assertEquals(proc.returncode, 0)
+        self.assertEquals(output, 'space 3')
+
+
 def main():
     unittest.main( testRunner = unittest.TextTestRunner( verbosity = 2 ) )
 

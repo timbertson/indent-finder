@@ -123,12 +123,16 @@ class IndentFinder:
 
     def parse_file( self, fname ):
         self.clear()
-        f = open( fname )
+        if fname == '-':
+            f = sys.stdin
+        else:
+            f = open( fname )
         l = f.readline()
         while( l ):
             self.analyse_line( l )
             l = f.readline()
-        f.close()
+        if f != sys.stdin:
+            f.close()
 
     def clear( self ):
         self.lines = {}
@@ -434,21 +438,18 @@ class IndentFinder:
 def main():
     VIM_OUTPUT = 0
 
-    file_list = []
     from optparse import OptionParser
     p = OptionParser(help)
     p.add_option('--vim-output', action='store_true', default=False)
     p.add_option('--verbose', action='count', default=DEFAULT_VERBOSITY, dest='verbosity')
     p.add_option('--version', action='store_true')
-    opts, file_list = p.parse_args()
+    opts, args = p.parse_args()
     if opts.version:
         print 'IndentFinder v%s' % VERSION
         return
     IndentFinder.VERBOSITY = opts.verbosity
     VIM_OUTPUT = opts.vim_output
-    if not file_list:
-        p.print_help()
-        return 1
+    file_list = args or ['-']
 
     fi = IndentFinder()
 
@@ -457,17 +458,11 @@ def main():
     for fname in file_list:
         fi.parse_file( fname )
 
-        if not one_file:
-            if VIM_OUTPUT:
-                print "%s : %s" % (fname, fi.vim_output())
-            else:
-                print "%s : %s" % (fname, str(fi))
-
-    if one_file:
-        if VIM_OUTPUT:
-            sys.stdout.write( fi.vim_output() )
+        output = fi.vim_output() if VIM_OUTPUT else str(fi)
+        if one_file:
+            sys.stdout.write( output )
         else:
-            print str(fi)
+            print "%s : %s" % (fname, output)
 
 
 if __name__ == "__main__":
