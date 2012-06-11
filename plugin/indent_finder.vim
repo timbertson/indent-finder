@@ -51,5 +51,5 @@ endfun
 
 augroup IndentFinder
     au!
-    au BufReadPost *.* call <SID>IndentFinderLoad()
+    au BufReadPost * call <SID>IndentFinderLoad()
 augroup End
