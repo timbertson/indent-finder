@@ -14,6 +14,7 @@ fun! g:IndentFinderApply()
     call s:IndentFinderApply()
 endfun
 
+let s:root_path = expand('<sfile>:p:h:h')
 fun! s:IndentFinderLoad()
     let b:indent_finder_result = ""
     let b:indent_finder_error = ""
@@ -23,7 +24,7 @@ fun! s:IndentFinderLoad()
         return
     endif
 
-    let l:cmd="python -c \"import indent_finder; indent_finder.main()\""
+    let l:cmd="python \"". s:root_path . "/indent_finder.py\""
                 \. " --vim-output "
                 \. " --default-style=".g:indent_finder_default_style
                 \. " --default-width=".g:indent_finder_default_width
