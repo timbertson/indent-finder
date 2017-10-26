@@ -45,7 +45,7 @@ fun! s:IndentFinderLoad()
 endfun
 
 fun! s:IndentFinderApply()
-    if b:indent_finder_result != ""
+    if exists("b:indent_finder_result") && b:indent_finder_result != ""
         execute b:indent_finder_result
     endif
 endfun
